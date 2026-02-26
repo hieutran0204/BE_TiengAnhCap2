@@ -4,7 +4,13 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth/auth.module';
 import mongoose from 'mongoose';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { APP_GUARD } from '@nestjs/core/constants';
+import { ClassroomModule } from './classroom/classroom.module';
+import { SocketModule } from './real-time/socket/socket.module';
+import { EBookModule } from './e-book/e-book.module';
 
 @Module({
   imports: [
@@ -19,6 +25,10 @@ import mongoose from 'mongoose';
       inject: [ConfigService],
     }),
     UserModule,
+    AuthModule,
+    ClassroomModule,
+    SocketModule,
+    EBookModule,
   ],
   controllers: [AppController],
   providers: [AppService],

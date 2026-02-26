@@ -1,12 +1,34 @@
-import { Controller, Get } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
+import { LocalAuthGuard } from './auth/local-auth.guard';
+import { AuthService } from './auth/auth.service';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
+import { Public } from './decorator/customize';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private configService: ConfigService,
+    private authService: AuthService,
+  ) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Public()
+  @UseGuards(LocalAuthGuard)
+  @Post('/login')
+  async handleLogin(@Request() req) {
+    // return this.authService.login(req.user); có thể thêm message nếu muốn
+    const resault = await this.authService.login(req.user);
+    return {
+      message: 'Login successful',
+      ...resault,
+    };
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('/profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }
